@@ -5,6 +5,9 @@ export function setTokens(access, refresh) {
     if (typeof window !== 'undefined') {
         localStorage.setItem(ACCESS_KEY, access);
         if (refresh) localStorage.setItem(REFRESH_KEY, refresh);
+        try {
+            window.dispatchEvent(new Event("auth-changed"));
+        } catch {}
     }
 }
 
@@ -26,6 +29,9 @@ export function clearTokens() {
     if (typeof window !== 'undefined') {
         localStorage.removeItem(ACCESS_KEY);
         localStorage.removeItem(REFRESH_KEY);
+        try {
+            window.dispatchEvent(new Event("auth-changed"));
+        } catch {}
     }
 }
 
@@ -50,5 +56,8 @@ export async function logout() {
     }
 
     clearTokens();
+    try {
+        window.dispatchEvent(new Event("auth-changed"));
+    } catch {}
     window.location.href = "/login";
 }

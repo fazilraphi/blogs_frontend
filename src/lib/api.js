@@ -32,6 +32,9 @@ export async function apiRequest(endpoint, options = {}) {
                 const data = await refreshRes.json();
                 if (data.access_token) {
                     localStorage.setItem("access_token", data.access_token);
+                    try {
+                        window.dispatchEvent(new Event("auth-changed"));
+                    } catch {}
                     // Update token for retry
                     headers["Authorization"] = `Bearer ${data.access_token}`;
                     return fetch(`${API_URL}${endpoint}`, { ...options, headers });

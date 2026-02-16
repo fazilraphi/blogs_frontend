@@ -27,11 +27,18 @@ export default function Navbar() {
     const onStorage = (e) => {
       if (e.key === "access_token") check();
     };
+    const onAuthChanged = () => {
+      check();
+      if (isLoggedIn()) loadMe();
+      else setMe(null);
+    };
     const onMeUpdated = () => loadMe();
     window.addEventListener("storage", onStorage);
+    window.addEventListener("auth-changed", onAuthChanged);
     window.addEventListener("me-updated", onMeUpdated);
     return () => {
       window.removeEventListener("storage", onStorage);
+      window.removeEventListener("auth-changed", onAuthChanged);
       window.removeEventListener("me-updated", onMeUpdated);
     };
   }, []);
