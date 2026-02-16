@@ -49,8 +49,33 @@ export default function BlogCard({ blog }) {
 
                 <div className="flex items-center justify-between border-t border-white/5 pt-4 mt-auto">
                     <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-gray-700 to-gray-600 flex items-center justify-center text-xs font-bold text-white">
-                            {blog.author?.username?.charAt(0).toUpperCase() || "U"}
+                        <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center">
+                            {(
+                                blog.author?.profile_image_url ||
+                                blog.author?.avatar_url ||
+                                blog.author_image_url ||
+                                blog.authorAvatarUrl ||
+                                blog.user?.profile_image_url
+                            ) ? (
+                                <Image
+                                    src={
+                                        blog.author?.profile_image_url ||
+                                        blog.author?.avatar_url ||
+                                        blog.author_image_url ||
+                                        blog.authorAvatarUrl ||
+                                        blog.user?.profile_image_url
+                                    }
+                                    alt="author"
+                                    width={32}
+                                    height={32}
+                                    unoptimized
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <span className="text-xs font-bold text-white bg-gradient-to-tr from-gray-700 to-gray-600 w-full h-full flex items-center justify-center">
+                                    {blog.author?.username?.charAt(0).toUpperCase() || "U"}
+                                </span>
+                            )}
                         </div>
                         <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
                             {blog.author?.username || "Anonymous"}

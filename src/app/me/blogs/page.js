@@ -15,13 +15,28 @@
      async function load() {
        setLoading(true);
        try {
-         const res = await apiRequest("/me/blogs");
-         if (res.ok) {
-           const data = await res.json();
-           setBlogs(data.blogs || []);
-         } else {
-           setError("Failed to load your blogs");
-         }
+        let uid = null;
+        try {
+          const meRes = await apiRequest("/me");
+          if (meRes.ok) {
+            const me = await meRes.json();
+            uid = me?.id ?? null;
+          }
+        } catch {}
+        const res = await apiRequest("/me/blogs");
+        if (res.ok) {
+          const data = await res.json();
+          const arr = Array.isArray(data) ? data : data.blogs || [];
+          const filtered = uid
+            ? arr.filter((b) => {
+                const aid = b?.author?.id ?? b?.user_id ?? b?.author_id ?? b?.userId;
+                return String(aid) === String(uid);
+              })
+            : arr;
+          setBlogs(filtered);
+        } else {
+          setError("Failed to load your blogs");
+        }
        } catch (e) {
          setError("Failed to load your blogs");
        } finally {

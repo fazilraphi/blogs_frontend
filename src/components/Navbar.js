@@ -49,9 +49,7 @@ export default function Navbar() {
                 { name: "Home", path: "/" },
                 { name: "Create", path: "/create" },
                 { name: "Feed", path: "/feed" },
-              { name: "Profile", path: "/profile/me" },
-                { name: "My Blogs", path: "/me/blogs" },
-                { name: "Profile Setup", path: "/settings/profile" },
+              // Profile-specific actions live inside /profile/me now
               ]
             : [
                 { name: "Home", path: "/" },
@@ -72,7 +70,7 @@ export default function Navbar() {
 
       {loggedIn ? (
         <div className="flex items-center space-x-3">
-          <Link href="/settings/profile" className="flex items-center space-x-2 group">
+          <Link href="/profile/me" className="flex items-center space-x-2 group">
             <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center">
               {me?.profile_image_url || me?.avatar_url ? (
                 <Image src={me.profile_image_url || me.avatar_url} alt="me" width={32} height={32} unoptimized className="w-full h-full object-cover" />
@@ -82,9 +80,7 @@ export default function Navbar() {
                 </span>
               )}
             </div>
-            <span className="text-sm text-gray-300 group-hover:text-white transition-colors hidden md:inline">
-              {me?.username || "Profile"}
-            </span>
+            <span className="text-sm text-gray-300 group-hover:text-white transition-colors hidden md:inline">{me?.username || "Profile"}</span>
           </Link>
           <button
             onClick={logout}

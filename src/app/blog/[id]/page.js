@@ -15,6 +15,16 @@ async function getBlog(id) {
   }
 }
 
+async function getUser(userId) {
+  try {
+    const r = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}`, { cache: "no-store" });
+    if (!r.ok) return null;
+    return r.json();
+  } catch {
+    return null;
+  }
+}
+
 export default async function BlogDetail({ params }) {
   const { id } = await params; // Await params in newer Next.js versions if needed, or just params.id depending on version. safe to await.
   const blog = await getBlog(id);
@@ -27,6 +37,21 @@ export default async function BlogDetail({ params }) {
     );
   }
 
+  // Enrich author with profile image if missing
+  if (blog?.author?.id && !(blog.author.profile_image_url || blog.author.avatar_url)) {
+    const authorDetails = await getUser(blog.author.id);
+    if (authorDetails) {
+      blog.author = {
+        ...blog.author,
+        profile_image_url:
+          authorDetails.profile_image_url ||
+          authorDetails.avatar_url ||
+          blog.author.profile_image_url ||
+          blog.author.avatar_url,
+      };
+    }
+  }
+
   return (
     <div className="max-w-4xl mx-auto mt-24 px-6 pb-20">
       <div className="mb-8">
@@ -34,8 +59,14 @@ export default async function BlogDetail({ params }) {
 
         <div className="flex items-center justify-between py-6 border-y border-white/10">
           <div className="flex items-center space-x-4">
-            <div className="h-12 w-12 rounded-full bg-gradient-to-tr from-[var(--color-apple-green)] to-blue-500 flex items-center justify-center text-black font-bold text-xl">
-              {blog.author?.username?.charAt(0).toUpperCase() || "U"}
+            <div className="h-12 w-12 rounded-full overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center">
+              {blog.author?.profile_image_url || blog.author?.avatar_url ? (
+                <Image src={blog.author.profile_image_url || blog.author.avatar_url} alt="author" width={48} height={48} unoptimized className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-black font-bold text-xl bg-gradient-to-tr from-[var(--color-apple-green)] to-blue-500 w-full h-full flex items-center justify-center">
+                  {blog.author?.username?.charAt(0).toUpperCase() || "U"}
+                </span>
+              )}
             </div>
             <div>
               <p className="text-white font-medium text-lg">{blog.author?.username}</p>
