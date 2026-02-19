@@ -1,22 +1,23 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { apiRequest } from "@/lib/api";
 
 export default function MyProfileRedirect() {
   const router = useRouter();
-  const search = useSearchParams();
+
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+
+    async function load() {
       try {
         const r = await apiRequest("/me");
+
         if (r.ok) {
           const me = await r.json();
           if (!cancelled && me?.id) {
-            const qs = search?.toString();
-            router.replace(`/profile/${me.id}${qs ? `?${qs}` : ""}`);
+            router.replace(`/profile/${me.id}`);
           }
         } else {
           router.replace("/login");
@@ -24,11 +25,14 @@ export default function MyProfileRedirect() {
       } catch {
         router.replace("/login");
       }
-    })();
+    }
+
+    load();
+
     return () => {
       cancelled = true;
     };
-  }, [router, search]);
+  }, [router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
