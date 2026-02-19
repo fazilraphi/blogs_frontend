@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { apiRequest } from "@/lib/api";
 import RequireAuth from "@/components/RequireAuth";
 import Image from "next/image";
 
 export default function ProfileSettingsContent() {
   const router = useRouter();
-  const search = useSearchParams();
-  const onboarding = search?.get("onboarding") === "1";
+
+  const [onboarding, setOnboarding] = useState(false);
 
   const [form, setForm] = useState({
     username: "",
@@ -23,6 +23,13 @@ export default function ProfileSettingsContent() {
   const [uploading, setUploading] = useState(false);
   const [avatar, setAvatar] = useState("");
 
+  // ✅ Read query param safely on client
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setOnboarding(params.get("onboarding") === "1");
+  }, []);
+
+  // ✅ Load user data
   useEffect(() => {
     async function loadMe() {
       setLoading(true);
@@ -139,6 +146,7 @@ export default function ProfileSettingsContent() {
                   {error}
                 </div>
               )}
+
               {success && (
                 <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-3 rounded-lg text-sm">
                   {success}
